@@ -1,15 +1,11 @@
 name: PlotSystem
 main: galaxygamer088\PlotSystem\PlotSystem
 author: galaxygamer088
-version: 0.0.1
+version: 1.0.0
 api: 4.0.0
 commands:
   suchtplot:
     description: generiert eine Plot welt
-    permission: "plot.op"
-
-  roadmap:
-    description: generiert RoadMap welt
     permission: "plot.op"
 
   p:
