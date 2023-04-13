@@ -1,0 +1,197 @@
+---
+Logo: "§b[§d§lD§fS§r§b]"
+
+Messages:
+  1: "§cDu hast keine Berechtigung um dieses Plot betreten!"
+  2: "§cDieses Plot gehört niemanden!"
+  3:
+    1: "§aDu wurdest erfolgreich zu §bPlot ("
+    2: ")§a teleportiert"
+  4: "§cUngültige PlotId!"
+  5:
+    1: "§c"
+    2: " besitzt kein Plot!"
+  6:
+    1: "§cDu besitzt kein "
+    2: "`tes Plot!"
+  7:
+    1: "§c"
+    2: " besitzt kein "
+    3: "`tes Plot"
+  8: "§cDu besitzt kein Plot!"
+  9: "§aDu wurdest erfolgreich zum Home teleportiert"
+  10: "§aPlot wurde erfolgreich geclaimt!"
+  11: "§cDu kannst keine weiteren Plot in besitz nehmen!"
+  12: "§cDu musst auf einem Plot stehen um den Command nutzen zu können!"
+  13: "§aStraße wurde erfolgreich gemergt"
+  14: "§cDu musst auf einer Straße stehen um den Command nutzen zu können!"
+  15: "§cDu besitzt keine Berechtigung um das zu machen!"
+  16: "§cDieses Plot gehört schon jemanden!"
+  17: "§aNeuer Plot Spawn wurde gesetzt bei: §b"
+  18:
+    1: "§aPlot wurde an §b"
+    2: "§a vergeben"
+  19: "§cDu musst auf einer PlotWelt sein um diesen Command benutzen zu können!"
+  20: "§cDu wurdest vom Plot geworfen!"
+  21: "§aEs wurden alle Spieler vom Plot geworfen!"
+  22: "§aDas Plot wurde erfolgreich gelöscht"
+  23: "§cDas Plot kann nicht gelöscht werden solange es noch gemergt ist!"
+  24: "§aDas Plot wurde erfolgreich resetet"
+  25: "§aDas Merge wurde erfolgreich resetet"
+  26: "§aStraße wurde erfolgreich geunmergt"
+  27:
+    1: "§aEs wurde ein freies Plot bei: §bX: "
+    2: " Z: "
+    3: "§a gefunden"
+  28:
+    1: "§aDie Welt §b"
+    2: "§a wurde erfolgreich erstellt"
+  29: "§cDu musst ein Weltnamen festlegen um eine Plotwelt zu erstellen!"
+
+  PlotInfoMenu:
+    1:
+      1: "§aPlot ("
+      2: ") Infos"
+    2: "§aMerge Plot Infos"
+    3: "Hier siehst du alle Infos zum Plot:"
+    4: "Alle Plot Id's:"
+    5: "Owner:"
+    6: "Spawn Point: "
+    7: "Helfer:"
+    8: "Trusted:"
+    9: "Geblockt:"
+    10: "§cZurück"
+
+  ChangePlotRandMenu:
+    1:
+      1: "§aDer Plot Rand wurde erfolgreich zu §b"
+      2: "§a geändert worden"
+    2: "§aRand Block ändern"
+    3: "Wähle aus welchen Rand Block du für das Plot haben möchtest:"
+    4: "§cZurück"
+    5: "Block unter Rand ändern"
+
+  ChangePlotUnderRandMenu:
+    1:
+      1: "§aDer Untere Plot Rand wurde erfolgreich zu §b"
+      2: "§a geändert worden"
+    2: "§aBlock unter Rand ändern"
+    3: "Wähle aus zu welchen Block den du für das Plot haben möchtest der unter den Rand ist:"
+    4: "§cZurück"
+
+  ChangePlotWallMenu:
+    1:
+      1: "§aDie Plot Wand wurde erfolgreich zu §b"
+      2: "§a geändert worden"
+    2: "§aWand Block ändern"
+    3: "Wähle aus zu welchen Wand Block du für das Plot haben möchtest:"
+    4: "§cZurück"
+
+  PlayerPlotListMenu:
+    1: "§aPlot Liste"
+    2: "§aPlot Liste von "
+    3: "Wähle aus zu welches Plot du dich teleportieren möchtest:"
+    4: "§cZurück"
+
+  PlotMenu:
+    1:
+      1: "§aPlot ("
+      2: ") Menü"
+    2: "Wähle aus was du machen möchtest:"
+    3: "Infos"
+    4: "Spawn Punkt ändern"
+    5: "Rand ändern"
+    6: "Wand ändern"
+    7: "Helfer List"
+    8: "Trusted List"
+    9: "Plot vergeben"
+
+  HelperMenu:
+    1:
+      1: "§aPlot ("
+      2: ") Helfer Liste"
+    2: "Wähle aus was du machen möchtest:"
+    3: "§cZurück"
+    4: "Alle Spieler sind Helfer"
+    5: "§aTrue"
+    6: "§cFalse"
+    7: "Helfer Hinzufügen"
+
+  TrustedMenu:
+    1: "§cDu bist nicht mehr auf diesen Plot getrusted!"
+    2:
+      1: "§aPlot ("
+      2: ") Trusted Liste"
+    3: "§cZurück"
+    4: "Alle Spieler sind Trusted"
+    5: "§aTrue"
+    6: "§cFalse"
+    7: "Spieler Trusten"
+    8: "Spieler Blockieren"
+    9: "§aTrusted"
+    10: "§cBlockiert"
+
+  RemovePlayerMenu:
+    1:
+      1: "§aEs wurde §b"
+      2: "§a aus der Liste entfernt!"
+    2:
+      1: "§aPlot ("
+      2: ") Spieler Verwalten"
+    3:
+      1: "Wähle aus was du mit "
+      2: " machen möchtest:"
+    4: "Aus Liste entfernen"
+    5: "Rechte verwalten"
+    6: "§cZurück"
+
+  EditHelperPermissionsMenu:
+    1:
+      1: "§aPlot ("
+      2: ") Spieler Rechte Verwalten"
+    2:
+      1: "Wähle aus was "
+      2: " für Rechte auf dem Plot haben darf"
+    3: "Bauen"
+    4: "Abbauen"
+    5: "Türen benutzen"
+    6: "Kisten öffnen"
+    7: "Helfer Liste"
+    8: "Trusted Liste"
+    9: "Spawn ändern"
+    10: "Wand ändern"
+    11: "Rand ändern"
+
+  PlayerListMenu:
+    1:
+      1: "§aDu wurdest erfolgreich zum §b"
+      2: "`ten§a Plot von §b"
+      3: "§a teleportiert"
+    2:
+      1: "§aEs wurde §b"
+      2: "§a als Helfer hinzugefügt"
+    3:
+      1: "§c"
+      2: " ist schon ein helfer!"
+    4:
+      1: "§aEs wurde §b"
+      2: "§a auf diesem Plot getrusted"
+    5:
+      1: "§c"
+      2: " ist schon getrusted!"
+    6: "§cDu wurdest auf diesem Plot blockiert!"
+    7:
+      1: "§aEs wurde §b"
+      2: "§a auf diesem Plot blockiert"
+    8:
+      1: "§c"
+      2: " wurde schon blockiert!"
+    9: "Wähle ein Spieler aus, um die Liste aller Plots die er besitzt anzuzeigen"
+    10:
+      1: "Wähle ein Spieler aus, um dich zum "
+      2: "'ten Plot von ihm zu teleportieren"
+    11: "Wähle ein Spieler aus, um ihn zum neuen Owner des Plotes zu ernennen"
+    12: "Wähle ein Spieler aus, um ihn auf diesen Plot als Helfer hinzuzufügen"
+    13: "Wähle ein Spieler aus, um ihn auf diesen Plot zu Trusten"
+    14: "Wähle ein Spieler aus, um ihn auf diesen Plot zu Blockieren"
+...

@@ -1,0 +1,28 @@
+---
+Permissions:
+  Default: 0
+
+
+RandBlocks:
+  Nichts:
+    Id: 0
+    Meta: 0
+    Permission: 0
+
+  Eichenstuffe:
+    Id: 158
+    Meta: 0
+    Permission: 0
+
+
+UnderRandBlocks:
+  Eichenbretter:
+    Id: 5
+    Meta: 0
+    Permission: 0
+
+  Fichtenbretter:
+    Id: 5
+    Meta: 1
+    Permission: 0
+...
