@@ -4,7 +4,7 @@ author: galaxygamer088
 version: 1.0.2
 api: 4.0.0
 commands:
-  2
+
   p:
     description: PlotSystem
     permission: "plot.player"
