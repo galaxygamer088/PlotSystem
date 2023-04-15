@@ -1,6 +1,8 @@
 ---
 Options:
-  ConnectToSupporterPlugin: "false"
+  ConnectToPlugin:
+    SupporterPlugin: "false"
+    PurePerms: "false"
 
 
 Ranks:
