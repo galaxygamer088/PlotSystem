@@ -4,10 +4,7 @@ author: galaxygamer088
 version: 1.0.2
 api: 4.0.0
 commands:
-  suchtplot:
-    description: generiert eine Plot welt
-    permission: "plot.op"
-
+  2
   p:
     description: PlotSystem
     permission: "plot.player"
@@ -15,6 +12,3 @@ commands:
 permissions:
   plot.player:
     default: true
-
-  plot.op:
-    default: op
