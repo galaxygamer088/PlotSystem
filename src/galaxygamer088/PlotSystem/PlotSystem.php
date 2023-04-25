@@ -25,6 +25,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat as tf;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\Position;
 use pocketmine\world\World;
@@ -326,6 +327,40 @@ const CROSSING = 4; //blue
         }
         return false;
     }
+    public function GenerationGetter()
+    {
+        $genera = [];
+        $all_worlds = $this->getServer()->getWorldManager()->getWorlds();
+        foreach ($all_worlds as $world) {
+            //getGenerator() is located in pocketmine\world\format\io\WorldData
+            // u can get WorldData with getWorldData() in pocketmine\world\format\io\WorldProvider
+            //u can getProvider() in pocketmine\world\World
+            $genera[] = [$world->getProvider()->getWorldData()->getGenerator(), $world->getFolderName()];
+            //CB ist suchtplot Generator
+        }
+        return $genera;
+    }
+    public function doesPlotWorldExist()
+    {
+        $genera = $this->GenerationGetter();
+        foreach ($genera as $gen){
+            if($gen[0] == "suchtplot") {
+                return true;
+            }
+        }
+    }
+    public function getPlotWorlds(){
+        $genera = $this->GenerationGetter();
+        $PlotWorlds = [];
+        if($this->GenerationGetter() == true){
+            foreach($genera as $gen){
+                if($gen[0] == "suchtplot"){
+                    $PlotWorlds[] = $gen[1];
+                }
+            }
+        }
+        return $PlotWorlds;
+    }
 
     public function getAllPlayer() : array{
         $playerList = [];
@@ -378,8 +413,77 @@ const CROSSING = 4; //blue
                     }else{
                         $p->sendMessage($this->getLogo()." ".$this->getMessage("15"));
                     }
-                }
 
+
+                }
+                //$this->doesPlotWorldExist();
+                elseif($args[0] == "h" or $args[0] == "home") {
+                    if ($this->doesPlotWorldExist() == true) {
+                        $worlds = $this->getPlotWorlds();
+                        if($this->isPlotWorld($p->getWorld())) {
+                            $world = $p->getWorld()->getFolderName();
+                        }elseif(count($worlds) == 1){
+                            foreach ($worlds as $worlda) {
+                                $world = $worlda;
+                            }
+                        }else{
+                            // u have to be at the citybuild server
+                            $p->sendMessage(tf::RED. "/p h only works on CityBuild world on this server");
+                            return true;
+                            //or...
+                            /**
+                             * foreach($worlds as $world){
+                             *   if(count($this->getClaimedPlots($p->getName(), $world)) >= 1){
+                             *     $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
+                             *     $this->teleportPlayerToPlot($p, $world, $homePlot);
+                             *      return true;
+                             *    }
+                             * }
+                             */
+                        }
+                            if (isset($args[1])) {
+                                if (is_numeric($args[1]) and $args[1] > 0) {
+                                    if (count($this->getClaimedPlots($p->getName(), $world)) >= $args[1]) {
+                                        $homePlot = $this->getClaimedPlots($p->getName(), $world)[$args[1]];
+                                    } else {
+                                        $p->sendMessage($this->getLogo() . " " . $this->getMessage("6.1") . $args[1] . $this->getMessage("6.2"));
+                                    }
+                                } elseif (isset($this->getAllPlayer()[$args[1]])) {
+                                    if (isset($args[2]) and is_numeric($args[2]) and $args[2] > 0) {
+                                        if (count($this->getClaimedPlots($args[1], $world)) >= $args[2]) {
+                                            $homePlot = $this->getClaimedPlots($args[1], $world)[$args[2]];
+                                        } else {
+                                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("7.1") . $args[1] . $this->getMessage("7.2") . $args[2] . $this->getMessage("7.3"));
+                                        }
+                                    } else {
+                                        if (count($this->getClaimedPlots($args[1], $world)) > 0) {
+                                            $homePlot = $this->getClaimedPlots($args[1], $world)[1];
+                                        } else {
+                                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("5.1") . $args[1] . $this->getMessage("5.2"));
+                                        }
+                                    }
+                                }else{
+                                    if (!isset($args[2])) {
+                                        $args[2] = 1;
+                                    }
+                                    $this->PlayerListMenu($p, $world, $plotId, "home", $args[2]);
+                                }
+
+                            }else{
+                                if (count($this->getClaimedPlots($p->getName(), $world)) >= 1) {
+                                    $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
+                                } else {
+                                    $p->sendMessage($this->getLogo() . " " . $this->getMessage("8"));
+                                }
+                            }
+                        if (isset($homePlot)) {
+                            $this->teleportPlayerToPlot($p, $world, $homePlot);
+                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("9"));
+                        }
+                    }else{
+                        //Message that PlotWorld doesnt Exists
+                    }
+                }
                 elseif($this->isPlotWorld($p->getWorld())){
                     $name = $p->getName();
                     $world = $p->getWorld()->getFolderName();
@@ -507,46 +611,6 @@ const CROSSING = 4; //blue
                                 }
                             }
                         }
-
-                        elseif($args[0] == "h" or $args[0] == "home"){
-                            if(isset($args[1])){
-                                if(is_numeric($args[1]) and $args[1] > 0){
-                                    if(count($this->getClaimedPlots($p->getName(), $world)) >= $args[1]){
-                                        $homePlot = $this->getClaimedPlots($p->getName(), $world)[$args[1]];
-                                    }else{
-                                        $p->sendMessage($this->getLogo()." ".$this->getMessage("6.1").$args[1].$this->getMessage("6.2"));
-                                    }
-                                }elseif(isset($this->getAllPlayer()[$args[1]])){
-                                    if(isset($args[2]) and is_numeric($args[2]) and $args[2] > 0){
-                                        if(count($this->getClaimedPlots($args[1], $world)) >= $args[2]){
-                                            $homePlot = $this->getClaimedPlots($args[1], $world)[$args[2]];
-                                        }else{
-                                            $p->sendMessage($this->getLogo()." ".$this->getMessage("7.1").$args[1].$this->getMessage("7.2").$args[2].$this->getMessage("7.3"));
-                                        }
-                                    }else{
-                                        if(count($this->getClaimedPlots($args[1], $world)) > 0){
-                                            $homePlot = $this->getClaimedPlots($args[1], $world)[1];
-                                        }else{
-                                            $p->sendMessage($this->getLogo()." ".$this->getMessage("5.1").$args[1].$this->getMessage("5.2"));
-                                        }
-                                    }
-                                }else{
-                                    if(!isset($args[2])){$args[2] = 1;}
-                                    $this->PlayerListMenu($p, $world, $plotId, "home", $args[2]);
-                                }
-                            }else{
-                                if(count($this->getClaimedPlots($p->getName(), $world)) >= 1){
-                                    $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
-                                }else{
-                                    $p->sendMessage($this->getLogo()." ".$this->getMessage("8"));
-                                }
-                            }
-                            if(isset($homePlot)){
-                                $this->teleportPlayerToPlot($p, $world, $homePlot);
-                                $p->sendMessage($this->getLogo()." ".$this->getMessage("9"));
-                            }
-                        }
-
                         elseif(!$this->isPlotIdSet($world, $plotId)){
 
                             if($args[0] == "claim"){
