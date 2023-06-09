@@ -16,6 +16,8 @@ interface Options{
     public const PLOT_FLOOR_BLOCK = 7;
     public const PLOT_FILL_BLOCK = 8;
 
+    public const Y_LEVEL_IN_GENERATOR_SETBIOME = 0;
+
     public const ROAD_WIDTH = 9;
     public const PLOT_SIZE = 40;
     public const GROUND_HEIGHT = 40;

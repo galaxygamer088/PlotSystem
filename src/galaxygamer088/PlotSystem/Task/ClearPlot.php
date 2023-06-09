@@ -2,7 +2,6 @@
 
 namespace galaxygamer088\PlotSystem\Task;
 
-use galaxygamer088\PlotSystem\Options_test;
 use galaxygamer088\PlotSystem\InternalBlockFactory;
 use galaxygamer088\PlotSystem\Options;
 //use pocketmine\block\BlockFactory;
@@ -30,19 +29,19 @@ public array $plotId;
 
                     if($y == 0){
                         //$bottomBlock = BlockFactory::getInstance()->get(Options::PLOT_BOTTOM_BLOCK_ID, Options::PLOT_BOTTOM_BLOCK_META);
-                        $bottomBlock = InternalBlockFactory::get(Options_test::PLOT_BOTTOM_BLOCK);
+                        $bottomBlock = InternalBlockFactory::get(Options::PLOT_BOTTOM_BLOCK);
                         if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $bottomBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $bottomBlock);
                         }
                     }elseif($y == Options::GROUND_HEIGHT){
                         //$floorBlock = BlockFactory::getInstance()->get(Options::PLOT_FLOOR_BLOCK_ID, Options::PLOT_FLOOR_BLOCK_META);
-                        $floorBlock = InternalBlockFactory::get(Options_test::PLOT_FLOOR_BLOCK);
+                        $floorBlock = InternalBlockFactory::get(Options::PLOT_FLOOR_BLOCK);
                         if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $floorBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $floorBlock);
                         }
                     }elseif($y < Options::GROUND_HEIGHT){
-                       // $fillBlock = BlockFactory::getInstance()->get(Options_test::PLOT_FILL_BLOCK_ID, Options::PLOT_FILL_BLOCK_META);
-                        $fillBlock = InternalBlockFactory::get(Options_test::PLOT_FILL_BLOCK);
+                       // $fillBlock = BlockFactory::getInstance()->get(Options::PLOT_FILL_BLOCK_ID, Options::PLOT_FILL_BLOCK_META);
+                        $fillBlock = InternalBlockFactory::get(Options::PLOT_FILL_BLOCK);
                         if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $fillBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $fillBlock);
                         }

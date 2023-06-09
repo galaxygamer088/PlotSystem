@@ -35,6 +35,7 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\block\VanillaBlocks;
 
+
 class PlotSystem extends PluginBase implements Listener{
 
 public Config $messages, $permissions, $plot, $rand, $wall;
@@ -222,31 +223,44 @@ const CROSSING = 4; //blue
         }
     }
 
+
+
+
     public function blockPlace(BlockPlaceEvent $ev){
         $p = $ev->getPlayer();
-        //since pm removed get block $block = $ev->getBlock()->getPosition();
-        //but
-        $BlockAgainst = $ev->getBlockAgainst();
-        $blockInSight = $p->getLineOfSight(30, 0, [BlockTypeIds::AIR,BlockTypeIds::WATER]);
-        $blockAmountInSight = count($blockInSight);
-        foreach($blockInSight as $b){
-            if($b !== $BlockAgainst) {
-                $block = array_shift($blockInSight);
-            }
-        }
-       /** $x = $block->getPosition()->getX();
-        $y = $block->getPosition()->getY();
-        $z = $block->getPosition()->getZ();
-        $x2 = $BlockAgainst->getPosition()->getX();
-        $y2 = $BlockAgainst->getPosition()->getY();
-        $z2 = $BlockAgainst->getPosition()->getZ();
-        $p->sendMessage("Clicked block: [" .$x2. "/".$y2. "/". $z2."]");
-        $p->sendMessage("placed block: [" .$x. "/".$y."/". $z."]");
-        return; **/
+        $BlockTransaction = $ev->getTransaction();
         $world = $p->getWorld()->getFolderName();
-        $plotId = $this->getPlotIdByPosition($block->getPosition()->getX(), $block->getPosition()->getZ());
-
         if($this->isPlotWorld($p->getWorld())){
+            $blocks = [];
+            foreach($BlockTransaction->getBlocks() as $b){
+                $blocks[] = $b[3];
+            }
+            if(count($blocks) > 1){ //means like amount is 2
+                $b1 = $blocks[0];
+                $b2 = $blocks[1];
+                $x1 = $b1->getPosition()->getX();
+                $z1 = $b1->getPosition()->getZ();
+                $x2 = $b2->getPosition()->getX();
+                $z2 = $b2->getPosition()->getZ();
+                if($x1 !== $x2 or $z1 !== $z2){
+                    /** block is bigger than 1x1 (in x*z)*/
+                    $block = $blocks[1];
+                    $plotId = $this->getPlotIdByPosition($block->getPosition()->getX(), $block->getPosition()->getZ());
+                    if($this->isPlotIdSet($world, $plotId)){
+                        if(!$this->getPlayerPermissions($world, $plotId, $p->getName(), 3) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
+                            $ev->cancel();
+                            return;
+                        }
+                    }else{
+                        if(!$this->getServer()->isOp($p->getName())){
+                            $ev->cancel();
+                            return;
+                        }
+                    }
+                }
+            }
+            $block = $blocks[0];
+            $plotId = $this->getPlotIdByPosition($block->getPosition()->getX(), $block->getPosition()->getZ());
             if($this->isPlotIdSet($world, $plotId)){
                 if(!$this->getPlayerPermissions($world, $plotId, $p->getName(), 3) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
                     $ev->cancel();
@@ -263,9 +277,8 @@ const CROSSING = 4; //blue
         $p = $ev->getPlayer();
         $block = $ev->getBlock()->getPosition();
         $world = $p->getWorld()->getFolderName();
-        $plotId = $this->getPlotIdByPosition($block->getX(), $block->getZ());
-
         if($this->isPlotWorld($p->getWorld())){
+            $plotId = $this->getPlotIdByPosition($block->getX(), $block->getZ());
             if($this->isPlotIdSet($world, $plotId)){
                 if(!$this->getPlayerPermissions($world, $plotId, $p->getName(), 4) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
                     $ev->cancel();
@@ -582,8 +595,8 @@ const CROSSING = 4; //blue
                                         $this->plot->save();
                                         //$block1 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_RAND_BLOCK_ID, Options::ROAD_CLAIM_RAND_BLOCK_META);
                                         //$block2 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK_ID, Options::ROAD_CLAIM_UNDER_RAND_BLOCK_META);
-                                        $block1 = InternalBlockFactory::get(Options_test::ROAD_CLAIM_RAND_BLOCK);
-                                        $block2 = InternalBlockFactory::get(Options_test::ROAD_CLAIM_UNDER_RAND_BLOCK);
+                                        $block1 = InternalBlockFactory::get(Options::ROAD_CLAIM_RAND_BLOCK);
+                                        $block2 = InternalBlockFactory::get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK);
                                         $this->getScheduler()->scheduleTask(new ChangePlotRand($p->getPosition(), $plotId, $block1, $block2, [true, true, true, true], true, true, true));
                                         $p->sendMessage($this->getLogo()." ".$this->getMessage("10"));
                                     }else{
@@ -704,11 +717,11 @@ const CROSSING = 4; //blue
                                     if(!$this->isPlotIdSet($world, [$x, $z, self::ROAD_1]) and !$this->isPlotIdSet($world, [$x, $z, self::ROAD_2]) and !$this->isPlotIdSet($world, [($x - 1), $z, self::ROAD_1]) and !$this->isPlotIdSet($world, [$x, ($z - 1), self::ROAD_2])){
                                         $this->removePlotId($world, $plotId);
                                         //$rand1 = BlockFactory::getInstance()->get(Options::ROAD_RAND_BLOCK_ID, Options::ROAD_RAND_BLOCK_META);
-                                        $rand1 = InternalBlockFactory::get(Options_test::ROAD_RAND_BLOCK);
+                                        $rand1 = InternalBlockFactory::get(Options::ROAD_RAND_BLOCK);
                                         //$rand2 = BlockFactory::getInstance()->get(Options::ROAD_UNDER_RAND_BLOCK_ID, Options::ROAD_UNDER_RAND_BLOCK_META);
-                                        $rand2 = InternalBlockFactory::get(Options_test::ROAD_UNDER_RAND_BLOCK);
+                                        $rand2 = InternalBlockFactory::get(Options::ROAD_UNDER_RAND_BLOCK);
                                         //$wall = BlockFactory::getInstance()->get(Options::ROAD_WALL_BLOCK_ID, Options::ROAD_WALL_BLOCK_META);
-                                        $wall = InternalBlockFactory::get(Options_test::ROAD_WALL_BLOCK);
+                                        $wall = InternalBlockFactory::get(Options::ROAD_WALL_BLOCK);
                                         $this->getScheduler()->scheduleTask(new ChangePlotRand($p->getPosition(), $plotId, $rand1, $rand2, [true, true, true, true], true, true, true));
                                         $this->getScheduler()->scheduleTask(new ChangePlotWall($p->getPosition(), $plotId, $wall, [true, true, true, true], true));
                                         $this->getScheduler()->scheduleTask(new ClearPlot($p->getWorld(), $plotId));

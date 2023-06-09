@@ -3,7 +3,6 @@
 namespace galaxygamer088\PlotSystem\Generator;
 
 use galaxygamer088\PlotSystem\Options;
-use galaxygamer088\PlotSystem\Options_test;
 use galaxygamer088\PlotSystem\Generator\InternalBlockFactory;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\ChunkManager;
@@ -28,9 +27,8 @@ const CROSSING = 4;
         $chunk = $world->getChunk($chunkX, $chunkZ);
         for($z = 0; $z < 16; ++$z) {
             for($x = 0; $x < 16; ++$x) {
-                $chunk->setBiomeId($x, Options_test::Y_LEVEL_IN_GENERATOR_SETBIOME, $z, BiomeIds::PLAINS);
+                $chunk->setBiomeId($x, Options::Y_LEVEL_IN_GENERATOR_SETBIOME, $z, BiomeIds::PLAINS);
                // $chunk->setBlockStateId($x, 0, $z, BlockFactory::getInstance()->get(Options::PLOT_BOTTOM_BLOCK_ID, Options::PLOT_BOTTOM_BLOCK_META)->getStateId());
-               // $chunk->setBlockStateId($x, 0, $z, InternalBlockFactory::get(Options_test::PLOT_BOTTOM_BLOCK)->getStateId());
                 $chunk->setBlockStateId($x, 0, $z, VanillaBlocks::BEDROCK()->getStateId());
 
                 //$roadBlock = BlockFactory::getInstance()->get(Options::ROAD_ROAD_BLOCK_ID, Options::ROAD_ROAD_BLOCK_META)->getStateId();
