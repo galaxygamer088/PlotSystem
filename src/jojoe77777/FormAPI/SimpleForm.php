@@ -15,13 +15,14 @@ class SimpleForm extends Form {
     private $labelMap = [];
 
     /**
-     * @param callable $callable
+     * @param callable|null $callable
      */
     public function __construct(?callable $callable) {
         parent::__construct($callable);
         $this->data["type"] = "form";
         $this->data["title"] = "";
         $this->data["content"] = $this->content;
+        $this->data["buttons"] = [];
     }
 
     public function processData(&$data) : void {

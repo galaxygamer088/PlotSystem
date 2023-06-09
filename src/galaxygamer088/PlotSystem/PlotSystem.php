@@ -2,6 +2,8 @@
 
 namespace galaxygamer088\PlotSystem;
 
+use pocketmine\block\BlockTypeIds;
+
 use galaxygamer088\PlotSystem\Generator\GeneratePlotWorld;
 use galaxygamer088\PlotSystem\Task\ChangeCrossingRand;
 use galaxygamer088\PlotSystem\Task\ChangeCrossingWall;
@@ -10,11 +12,13 @@ use galaxygamer088\PlotSystem\Task\ChangePlotWall;
 use galaxygamer088\PlotSystem\Task\ClearPlot;
 use galaxygamer088\PlotSystem\Task\SetRoad;
 use jojoe77777\FormAPI\CustomForm;
-use pocketmine\block\BlockFactory;
+use jojoe77777\FormAPI\SimpleForm;
+use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
@@ -25,12 +29,11 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
-use pocketmine\utils\TextFormat as tf;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
-use jojoe77777\FormAPI\SimpleForm;
+use pocketmine\block\VanillaBlocks;
 
 class PlotSystem extends PluginBase implements Listener{
 
@@ -54,7 +57,6 @@ const CROSSING = 4; //blue
         $this->saveResource("Permissions.yml");
         $this->saveResource("RandBlocks.yml");
         $this->saveResource("WallBlocks.yml");
-        $this->saveResource("Plot.yml");
         $this->messages = new Config($this->getDataFolder()."Messages.yml", Config::YAML);
         $this->permissions = new Config($this->getDataFolder()."Permissions.yml", Config::YAML);
         $this->rand = new Config($this->getDataFolder()."RandBlocks.yml", Config::YAML);
@@ -146,7 +148,7 @@ const CROSSING = 4; //blue
 
             if($plotTo[2] == self::PLOT and $plotFrom[2] == self::CROSSING or $plotTo[2] == self::PLOT and $plotFrom[2] == self::ROAD_1 or $plotTo[2] == self::PLOT and $plotFrom[2] == self::ROAD_2){
                 if(!$this->isPlotIdSet($world, $plotTo)){
-                    $ev->getPlayer()->sendActionBarMessage("§aPlot (".$plotTo[0].";".$plotTo[1].")\n§b/p claim");
+                    $ev->getPlayer()->sendActionBarMessage($this->getMessage("PlotMessage.4.1").$plotTo[0].";".$plotTo[1].$this->getMessage("PlotMessage.4.2")."\n".$this->getMessage("PlotMessage.4.3"));
                 }else{
                     if($this->isPlotIdSet($world, $plotFrom)){
                         if(!$this->is_in_array($plotFrom, $this->getAllMergePlots($world, $plotTo, true))){
@@ -188,7 +190,8 @@ const CROSSING = 4; //blue
 
         if($this->isPlotWorld($p->getWorld())){
             if($this->isPlotIdSet($world, $plotId)){
-                if($this->is_in_array($item->getId(), [389, 324, 427, 428, 429, 430, 431, 330, 96, -149, -146, -148, -145, -147, 167, 107, 183, 184, 185, 187, 186, 143, -144, -141, -143, -140, -142, 77, 69])){
+                //if($this->is_in_array($item->getId(), [389, 324, 427, 428, 429, 430, 431, 330, 96, -149, -146, -148, -145, -147, 167, 107, 183, 184, 185, 187, 186, 143, -144, -141, -143, -140, -142, 77, 69])){
+                if($this->is_in_array($item->getTypeId(), [389, 324, 427, 428, 429, 430, 431, 330, 96, -149, -146, -148, -145, -147, 167, 107, 183, 184, 185, 187, 186, 143, -144, -141, -143, -140, -142, 77, 69])){
                     if(!$this->getPlayerPermissions($world, $plotId, $p->getName(), 5) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
                         $ev->cancel();
                     }
@@ -221,9 +224,27 @@ const CROSSING = 4; //blue
 
     public function blockPlace(BlockPlaceEvent $ev){
         $p = $ev->getPlayer();
-        $block = $ev->getBlock()->getPosition();
+        //since pm removed get block $block = $ev->getBlock()->getPosition();
+        //but
+        $BlockAgainst = $ev->getBlockAgainst();
+        $blockInSight = $p->getLineOfSight(30, 0, [BlockTypeIds::AIR,BlockTypeIds::WATER]);
+        $blockAmountInSight = count($blockInSight);
+        foreach($blockInSight as $b){
+            if($b !== $BlockAgainst) {
+                $block = array_shift($blockInSight);
+            }
+        }
+       /** $x = $block->getPosition()->getX();
+        $y = $block->getPosition()->getY();
+        $z = $block->getPosition()->getZ();
+        $x2 = $BlockAgainst->getPosition()->getX();
+        $y2 = $BlockAgainst->getPosition()->getY();
+        $z2 = $BlockAgainst->getPosition()->getZ();
+        $p->sendMessage("Clicked block: [" .$x2. "/".$y2. "/". $z2."]");
+        $p->sendMessage("placed block: [" .$x. "/".$y."/". $z."]");
+        return; **/
         $world = $p->getWorld()->getFolderName();
-        $plotId = $this->getPlotIdByPosition($block->getX(), $block->getZ());
+        $plotId = $this->getPlotIdByPosition($block->getPosition()->getX(), $block->getPosition()->getZ());
 
         if($this->isPlotWorld($p->getWorld())){
             if($this->isPlotIdSet($world, $plotId)){
@@ -249,7 +270,7 @@ const CROSSING = 4; //blue
                 if(!$this->getPlayerPermissions($world, $plotId, $p->getName(), 4) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
                     $ev->cancel();
                 }else{
-                    if($this->is_in_array($ev->getBlock()->getId(), [54, 146, 205, 218]) and !$this->getPlayerPermissions($world, $plotId, $p->getName(), 6) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
+                    if($this->is_in_array($ev->getBlock()->getTypeId(), [54, 146, 205, 218]) and !$this->getPlayerPermissions($world, $plotId, $p->getName(), 6) and !key_exists($p->getName(), $this->getAllMergeOwner($world, $plotId)) and $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".MustBeHelper") == "true" and !$this->getServer()->isOp($p->getName())){
                         $ev->cancel();
                     }
                 }
@@ -299,6 +320,12 @@ const CROSSING = 4; //blue
         }
     }
 
+    public function onExplosion(EntityExplodeEvent $ev){
+        if($this->isPlotWorld($ev->getPosition()->getWorld())){
+            $ev->cancel();
+        }
+    }
+
     public function getPlotMessage(string $world, array $plotTo) : string{
         $message = "";
         $stringId = $plotTo[0].";".$plotTo[1];
@@ -306,60 +333,22 @@ const CROSSING = 4; //blue
             $owner = $this->getAllMergeOwner($world, $plotTo);
             $keys = array_keys($owner);
             if(count($owner) == 1){
-                $message = "§aMerge Plot\n§b".$keys[0];
+                $message = $this->getMessage("PlotMessage.1.1")."\n".$this->getMessage("PlotMessage.1.2").$keys[0];
             }
             if(count($owner) > 1){
-                $message = "§aMerge Plot\n§b/p info";
+                $message = $this->getMessage("PlotMessage.2.1")."\n".$this->getMessage("PlotMessage.2.2");
             }
         }else{
-            $message = "§aPlot (".$stringId.")\n§b".$this->plot->getNested($world.".".$stringId.";0.Owner");
+            $message = $this->getMessage("PlotMessage.3.1").$stringId.$this->getMessage("PlotMessage.3.2")."\n".$this->getMessage("PlotMessage.3.3").$this->plot->getNested($world.".".$stringId.";0.Owner");
         }
         return $message;
     }
 
     public function isPlotWorld(World $world) : bool{
-        foreach($this->plot->getAll()["Worlds"] as $worldName => $count){
-            if($count !== 0){
-                if($world->getFolderName() == $worldName){
-                    return true;
-                }
-            }
+        if($world->getProvider()->getWorldData()->getGenerator() == "suchtplot"){
+            return true;
         }
         return false;
-    }
-    public function GenerationGetter()
-    {
-        $genera = [];
-        $all_worlds = $this->getServer()->getWorldManager()->getWorlds();
-        foreach ($all_worlds as $world) {
-            //getGenerator() is located in pocketmine\world\format\io\WorldData
-            // u can get WorldData with getWorldData() in pocketmine\world\format\io\WorldProvider
-            //u can getProvider() in pocketmine\world\World
-            $genera[] = [$world->getProvider()->getWorldData()->getGenerator(), $world->getFolderName()];
-            //CB ist suchtplot Generator
-        }
-        return $genera;
-    }
-    public function doesPlotWorldExist()
-    {
-        $genera = $this->GenerationGetter();
-        foreach ($genera as $gen){
-            if($gen[0] == "suchtplot") {
-                return true;
-            }
-        }
-    }
-    public function getPlotWorlds(){
-        $genera = $this->GenerationGetter();
-        $PlotWorlds = [];
-        if($this->GenerationGetter() == true){
-            foreach($genera as $gen){
-                if($gen[0] == "suchtplot"){
-                    $PlotWorlds[] = $gen[1];
-                }
-            }
-        }
-        return $PlotWorlds;
     }
 
     public function getAllPlayer() : array{
@@ -392,8 +381,6 @@ const CROSSING = 4; //blue
                 if(isset($args[0]) and $args[0] == "create"){
                     if($this->getServer()->isOp($p->getName())){
                         if(isset($args[1])){
-                            $this->plot->setNested("Worlds.".$args[1], 1);
-                            $this->plot->save();
                             $this->plot->setNested($args[1].".0;0;0.Owner", "Spawn");
                             $this->plot->setNested($args[1].".0;0;0.Spawn", (Options::PLOT_SIZE / 2).",".(Options::GROUND_HEIGHT + 2).",".(Options::TOTAL_SIZE - 1));
                             $this->plot->setNested($args[1].".0;0;0.Player.Helper", "0111000100");
@@ -413,77 +400,8 @@ const CROSSING = 4; //blue
                     }else{
                         $p->sendMessage($this->getLogo()." ".$this->getMessage("15"));
                     }
-
-
                 }
-                //$this->doesPlotWorldExist();
-                elseif($args[0] == "h" or $args[0] == "home") {
-                    if ($this->doesPlotWorldExist() == true) {
-                        $worlds = $this->getPlotWorlds();
-                        if($this->isPlotWorld($p->getWorld())) {
-                            $world = $p->getWorld()->getFolderName();
-                        }elseif(count($worlds) == 1){
-                            foreach ($worlds as $worlda) {
-                                $world = $worlda;
-                            }
-                        }else{
-                            // u have to be at the citybuild server
-                            $p->sendMessage(tf::RED. "/p h only works on CityBuild world on this server");
-                            return true;
-                            //or...
-                            /**
-                             * foreach($worlds as $world){
-                             *   if(count($this->getClaimedPlots($p->getName(), $world)) >= 1){
-                             *     $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
-                             *     $this->teleportPlayerToPlot($p, $world, $homePlot);
-                             *      return true;
-                             *    }
-                             * }
-                             */
-                        }
-                            if (isset($args[1])) {
-                                if (is_numeric($args[1]) and $args[1] > 0) {
-                                    if (count($this->getClaimedPlots($p->getName(), $world)) >= $args[1]) {
-                                        $homePlot = $this->getClaimedPlots($p->getName(), $world)[$args[1]];
-                                    } else {
-                                        $p->sendMessage($this->getLogo() . " " . $this->getMessage("6.1") . $args[1] . $this->getMessage("6.2"));
-                                    }
-                                } elseif (isset($this->getAllPlayer()[$args[1]])) {
-                                    if (isset($args[2]) and is_numeric($args[2]) and $args[2] > 0) {
-                                        if (count($this->getClaimedPlots($args[1], $world)) >= $args[2]) {
-                                            $homePlot = $this->getClaimedPlots($args[1], $world)[$args[2]];
-                                        } else {
-                                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("7.1") . $args[1] . $this->getMessage("7.2") . $args[2] . $this->getMessage("7.3"));
-                                        }
-                                    } else {
-                                        if (count($this->getClaimedPlots($args[1], $world)) > 0) {
-                                            $homePlot = $this->getClaimedPlots($args[1], $world)[1];
-                                        } else {
-                                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("5.1") . $args[1] . $this->getMessage("5.2"));
-                                        }
-                                    }
-                                }else{
-                                    if (!isset($args[2])) {
-                                        $args[2] = 1;
-                                    }
-                                    $this->PlayerListMenu($p, $world, $plotId, "home", $args[2]);
-                                }
 
-                            }else{
-                                if (count($this->getClaimedPlots($p->getName(), $world)) >= 1) {
-                                    $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
-                                } else {
-                                    $p->sendMessage($this->getLogo() . " " . $this->getMessage("8"));
-                                }
-                            }
-                        if (isset($homePlot)) {
-                            $this->teleportPlayerToPlot($p, $world, $homePlot);
-                            $p->sendMessage($this->getLogo() . " " . $this->getMessage("9"));
-                        }
-                    }else{
-                        //Message that PlotWorld doesnt Exists
-                    }
-                }
                 elseif($this->isPlotWorld($p->getWorld())){
                     $name = $p->getName();
                     $world = $p->getWorld()->getFolderName();
@@ -611,6 +529,46 @@ const CROSSING = 4; //blue
                                 }
                             }
                         }
+
+                        elseif($args[0] == "h" or $args[0] == "home"){
+                            if(isset($args[1])){
+                                if(is_numeric($args[1]) and $args[1] > 0){
+                                    if(count($this->getClaimedPlots($p->getName(), $world)) >= $args[1]){
+                                        $homePlot = $this->getClaimedPlots($p->getName(), $world)[$args[1]];
+                                    }else{
+                                        $p->sendMessage($this->getLogo()." ".$this->getMessage("6.1").$args[1].$this->getMessage("6.2"));
+                                    }
+                                }elseif(isset($this->getAllPlayer()[$args[1]])){
+                                    if(isset($args[2]) and is_numeric($args[2]) and $args[2] > 0){
+                                        if(count($this->getClaimedPlots($args[1], $world)) >= $args[2]){
+                                            $homePlot = $this->getClaimedPlots($args[1], $world)[$args[2]];
+                                        }else{
+                                            $p->sendMessage($this->getLogo()." ".$this->getMessage("7.1").$args[1].$this->getMessage("7.2").$args[2].$this->getMessage("7.3"));
+                                        }
+                                    }else{
+                                        if(count($this->getClaimedPlots($args[1], $world)) > 0){
+                                            $homePlot = $this->getClaimedPlots($args[1], $world)[1];
+                                        }else{
+                                            $p->sendMessage($this->getLogo()." ".$this->getMessage("5.1").$args[1].$this->getMessage("5.2"));
+                                        }
+                                    }
+                                }else{
+                                    if(!isset($args[2])){$args[2] = 1;}
+                                    $this->PlayerListMenu($p, $world, $plotId, "home", $args[2]);
+                                }
+                            }else{
+                                if(count($this->getClaimedPlots($p->getName(), $world)) >= 1){
+                                    $homePlot = $this->getClaimedPlots($p->getName(), $world)[1];
+                                }else{
+                                    $p->sendMessage($this->getLogo()." ".$this->getMessage("8"));
+                                }
+                            }
+                            if(isset($homePlot)){
+                                $this->teleportPlayerToPlot($p, $world, $homePlot);
+                                $p->sendMessage($this->getLogo()." ".$this->getMessage("9"));
+                            }
+                        }
+
                         elseif(!$this->isPlotIdSet($world, $plotId)){
 
                             if($args[0] == "claim"){
@@ -622,8 +580,10 @@ const CROSSING = 4; //blue
                                         $this->plot->setNested($world.".".$stringId.".Player.Helper", "0111000100");
                                         $this->plot->setNested($world.".".$stringId.".Player.Trusted", "1000000000");
                                         $this->plot->save();
-                                        $block1 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_RAND_BLOCK_ID, Options::ROAD_CLAIM_RAND_BLOCK_META);
-                                        $block2 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK_ID, Options::ROAD_CLAIM_UNDER_RAND_BLOCK_META);
+                                        //$block1 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_RAND_BLOCK_ID, Options::ROAD_CLAIM_RAND_BLOCK_META);
+                                        //$block2 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK_ID, Options::ROAD_CLAIM_UNDER_RAND_BLOCK_META);
+                                        $block1 = InternalBlockFactory::get(Options_test::ROAD_CLAIM_RAND_BLOCK);
+                                        $block2 = InternalBlockFactory::get(Options_test::ROAD_CLAIM_UNDER_RAND_BLOCK);
                                         $this->getScheduler()->scheduleTask(new ChangePlotRand($p->getPosition(), $plotId, $block1, $block2, [true, true, true, true], true, true, true));
                                         $p->sendMessage($this->getLogo()." ".$this->getMessage("10"));
                                     }else{
@@ -743,9 +703,12 @@ const CROSSING = 4; //blue
                                 if($this->plot->getNested($world.".".$x.";".$z.";".$id.".Owner") == $p->getName() or $this->permissions->getNested("Ranks.".$this->getConfigRank($p).".Clear") == "true" or $this->getServer()->isOp($name)) {
                                     if(!$this->isPlotIdSet($world, [$x, $z, self::ROAD_1]) and !$this->isPlotIdSet($world, [$x, $z, self::ROAD_2]) and !$this->isPlotIdSet($world, [($x - 1), $z, self::ROAD_1]) and !$this->isPlotIdSet($world, [$x, ($z - 1), self::ROAD_2])){
                                         $this->removePlotId($world, $plotId);
-                                        $rand1 = BlockFactory::getInstance()->get(Options::ROAD_RAND_BLOCK_ID, Options::ROAD_RAND_BLOCK_META);
-                                        $rand2 = BlockFactory::getInstance()->get(Options::ROAD_UNDER_RAND_BLOCK_ID, Options::ROAD_UNDER_RAND_BLOCK_META);
-                                        $wall = BlockFactory::getInstance()->get(Options::ROAD_WALL_BLOCK_ID, Options::ROAD_WALL_BLOCK_META);
+                                        //$rand1 = BlockFactory::getInstance()->get(Options::ROAD_RAND_BLOCK_ID, Options::ROAD_RAND_BLOCK_META);
+                                        $rand1 = InternalBlockFactory::get(Options_test::ROAD_RAND_BLOCK);
+                                        //$rand2 = BlockFactory::getInstance()->get(Options::ROAD_UNDER_RAND_BLOCK_ID, Options::ROAD_UNDER_RAND_BLOCK_META);
+                                        $rand2 = InternalBlockFactory::get(Options_test::ROAD_UNDER_RAND_BLOCK);
+                                        //$wall = BlockFactory::getInstance()->get(Options::ROAD_WALL_BLOCK_ID, Options::ROAD_WALL_BLOCK_META);
+                                        $wall = InternalBlockFactory::get(Options_test::ROAD_WALL_BLOCK);
                                         $this->getScheduler()->scheduleTask(new ChangePlotRand($p->getPosition(), $plotId, $rand1, $rand2, [true, true, true, true], true, true, true));
                                         $this->getScheduler()->scheduleTask(new ChangePlotWall($p->getPosition(), $plotId, $wall, [true, true, true, true], true));
                                         $this->getScheduler()->scheduleTask(new ClearPlot($p->getWorld(), $plotId));
@@ -910,8 +873,9 @@ const CROSSING = 4; //blue
 
             if($result !== 0 and $result !== 1){
                 $plots = $this->getAllMergePlots($world, $plotId, true);
-                $block1 = BlockFactory::getInstance()->get($this->rand->getNested("RandBlocks.".$this->randList[$result].".Id"), $this->rand->getNested("RandBlocks.".$this->randList[$result].".Meta"));
-                $block2 = BlockFactory::getInstance()->get(0, 0);
+                //$block1 = InternalBlockFactory::getInstance()->get($this->rand->getNested("RandBlocks.".$this->randList[$result].".Id"), $this->rand->getNested("RandBlocks.".$this->randList[$result].".Meta"));
+                $block1 = InternalBlockFactory::getBlock($this->rand->getNested("RandBlocks.".$this->randList[$result].".Id"), $this->rand->getNested("RandBlocks.".$this->randList[$result].".Meta"));
+                $block2 = VanillaBlocks::AIR();
                 for($i = 0; $i <= count($plots) - 1; $i++){
                     if($plots[$i][2] == self::PLOT){
                         $shape = $this->getPlotShape($world, $plots[$i]);
@@ -971,8 +935,8 @@ const CROSSING = 4; //blue
 
             if($result !== 0){
                 $plots = $this->getAllMergePlots($world, $plotId, true);
-                $block1 = BlockFactory::getInstance()->get(0, 0);
-                $block2 = BlockFactory::getInstance()->get($this->rand->getNested("UnderRandBlocks.".$this->randList[$result].".Id"), $this->rand->getNested("UnderRandBlocks.".$this->randList[$result].".Meta"));
+                $block1 = InternalBlockFactory::getBlock(0, 0);
+                $block2 = InternalBlockFactory::getBlock($this->rand->getNested("UnderRandBlocks.".$this->randList[$result].".Id"), $this->rand->getNested("UnderRandBlocks.".$this->randList[$result].".Meta"));
                 for($i = 0; $i <= count($plots) - 1; $i++){
                     if($plots[$i][2] == self::PLOT){
                         $shape = $this->getPlotShape($world, $plots[$i]);
@@ -1031,7 +995,7 @@ const CROSSING = 4; //blue
 
             if($result !== 0){
                 $plots = $this->getAllMergePlots($world, $plotId, true);
-                $block = BlockFactory::getInstance()->get($this->wall->getNested("WallBlocks.".$this->wallList[$result].".Id"), $this->wall->getNested("WallBlocks.".$this->wallList[$result].".Meta"));
+                $block = InternalBlockFactory::getBlock($this->wall->getNested("WallBlocks.".$this->wallList[$result].".Id"), $this->wall->getNested("WallBlocks.".$this->wallList[$result].".Meta"));
                 for($i = 0; $i <= count($plots) - 1; $i++){
                     if($plots[$i][2] == self::PLOT){
                         $shape = $this->getPlotShape($world, $plots[$i]);
@@ -1361,26 +1325,26 @@ const CROSSING = 4; //blue
         $id = $plotId[2];
 
         $form->setTitle($this->getMessage("TrustedMenu.2.1").$plotId[0].";".$plotId[1].$this->getMessage("TrustedMenu.2.2"));
-        $form->setContent("Wähle aus was du machen möchtest:".$this->getMessage("TrustedMenu.1"));
-        $form->addButton($this->getMessage("TrustedMenu.3"));
+        $form->setContent($this->getMessage("TrustedMenu.3"));
+        $form->addButton($this->getMessage("TrustedMenu.4"));
         if(str_split($this->plot->getNested($world.".".$x.";".$z.";".$id.".Player.Trusted"))[0] == 1){
-            $form->addButton($this->getMessage("TrustedMenu.4")."\n".$this->getMessage("TrustedMenu.5"));
+            $form->addButton($this->getMessage("TrustedMenu.5")."\n".$this->getMessage("TrustedMenu.6"));
         }else{
-            $form->addButton($this->getMessage("TrustedMenu.4")."\n".$this->getMessage("TrustedMenu.6"));
+            $form->addButton($this->getMessage("TrustedMenu.5")."\n".$this->getMessage("TrustedMenu.7"));
         }
-        $form->addButton($this->getMessage("TrustedMenu.7"));
         $form->addButton($this->getMessage("TrustedMenu.8"));
+        $form->addButton($this->getMessage("TrustedMenu.9"));
 
         $count = 1;
         foreach($this->plot->getAll()[$world][$x.";".$z.";".$id]["Player"] as $player => $permissions){
             if($player !== "Helper" and $player !== "Trusted"){
                 if(str_split($permissions)[1] == 1){
-                    $form->addButton("[".$count."] ".$player."\n".$this->getMessage("TrustedMenu.9"));
+                    $form->addButton("[".$count."] ".$player."\n".$this->getMessage("TrustedMenu.10"));
                     $this->playerList[$count + 3] = $player;
                     $count++;
                 }
                 if(str_split($permissions)[2] == 1){
-                    $form->addButton("[".$count."] ".$player."\n".$this->getMessage("TrustedMenu.10"));
+                    $form->addButton("[".$count."] ".$player."\n".$this->getMessage("TrustedMenu.11"));
                     $this->playerList[$count + 3] = $player;
                     $count++;
                 }
@@ -1404,10 +1368,9 @@ const CROSSING = 4; //blue
 
             if($result == 0){
                 foreach($this->getAllMergePlots($world, $plotId, true) as $count => $plot){
-                    $all = $this->plot->getAll()[$world][$plot[0].";".$plot[1].";".$plot[2]];
-                    unset($all["Player"][$player]);
-                    $allPlot[$plot[0].";".$plot[1].";".$plot[2]] = $all;
-                    $this->plot->set($world, $allPlot);
+                    $all = $this->plot->getAll()[$world][$plot[0].";".$plot[1].";".$plot[2]]["Player"];
+                    unset($all[$player]);
+                    $this->plot->setNested($world.".".$plot[0].";".$plot[1].";".$plot[2].".Player", $all);
                     $this->plot->save();
                 }
                 $p->sendMessage($this->getLogo()." ".$this->getMessage("RemovePlayerMenu.1.1").$player.$this->getMessage("RemovePlayerMenu.1.2"));
@@ -1428,7 +1391,7 @@ const CROSSING = 4; //blue
             return true;
         });
         $form->setTitle($this->getMessage("RemovePlayerMenu.2.1").$plotId[0].";".$plotId[1].$this->getMessage("RemovePlayerMenu.2.2"));
-        $form->setContent($this->getMessage("RemovePlayerMenu.3.1").$player.$this->getMessage("RemovePlayerMenu.3.1"));
+        $form->setContent($this->getMessage("RemovePlayerMenu.3.1").$player.$this->getMessage("RemovePlayerMenu.3.2"));
         $form->addButton($this->getMessage("RemovePlayerMenu.4"));
         if($option == "Helfer"){
             $form->addButton($this->getMessage("RemovePlayerMenu.5"));
@@ -1441,7 +1404,7 @@ const CROSSING = 4; //blue
     public function EditHelperPermissionsMenu(Player $p, string $world, array $plotId, string $player){
         $this->playerList = [];
         $this->optionList = [$world, $plotId, $player];
-        $form = new CustomForm(function (Player $p, int $data = null){
+        $form = new CustomForm(function (Player $p, array $data = null){
             if($data === null){
                 return true;
             }
@@ -1454,15 +1417,18 @@ const CROSSING = 4; //blue
             $player = $this->optionList[2];
             $split = str_split($this->plot->getNested($world.".".$x.";".$z.";".$id.".Player.".$player));
 
-            for($i = 1; $i <= count($data[]) - 1; $i++){
+            for($i = 1; $i <= count($data) - 1; $i++){
                 if($data[$i] == 1){
                     $split[$i + 2] = 1;
                 }else{
                     $split[$i + 2] = 0;
                 }
             }
-            $this->plot->setNested($world.".".$x.";".$z.";".$id.".Player.".$player, implode("", $split));
-            $this->plot->save();
+
+            foreach($this->getAllMergePlots($world, $plotId, true) as $count => $plot){
+                $this->plot->setNested($world.".".$plot[0].";".$plot[1].";".$plot[2].".Player.".$player, implode("", $split));
+                $this->plot->save();
+            }
 
             return true;
         });
@@ -1641,14 +1607,14 @@ const CROSSING = 4; //blue
     }
 
     public function registerMerge(Player $p, array $plotId, bool $remove){
-        $blockClaim1 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_RAND_BLOCK_ID, Options::ROAD_CLAIM_RAND_BLOCK_META);
-        $blockClaim2 = BlockFactory::getInstance()->get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK_ID, Options::ROAD_CLAIM_UNDER_RAND_BLOCK_META);
+        $blockClaim1 = InternalBlockFactory::get(Options::ROAD_CLAIM_RAND_BLOCK);
+        $blockClaim2 = InternalBlockFactory::get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK);
 
-        $blockAir = BlockFactory::getInstance()->get(0, 0);
-        $blockRoad = BlockFactory::getInstance()->get(Options::ROAD_ROAD_BLOCK_ID, Options::ROAD_ROAD_BLOCK_META);
+        $blockAir = VanillaBlocks::AIR();
+        $blockRoad = InternalBlockFactory::get(Options::ROAD_ROAD_BLOCK);
 
-        $blockWall = BlockFactory::getInstance()->get(Options::ROAD_WALL_BLOCK_ID, Options::ROAD_WALL_BLOCK_META);
-        $blockFill = BlockFactory::getInstance()->get(Options::PLOT_FILL_BLOCK_ID, Options::PLOT_FILL_BLOCK_META);
+        $blockWall = InternalBlockFactory::get(Options::ROAD_WALL_BLOCK);
+        $blockFill = InternalBlockFactory::get(Options::PLOT_FILL_BLOCK);
 
         $world = $p->getWorld()->getFolderName();
 
@@ -1927,15 +1893,15 @@ const CROSSING = 4; //blue
         return $plots;
     }
 
-    public function getPlot(int $world) : int{
-        return floor($world / $this->totalSize);
+    public function getPlot(float $world) : int{
+        return (int) floor($world / $this->totalSize);
     }
 
-    public function getPlotPos(float $world) : int{
+    public function getPlotPos(int $world) : int{
         if($world >= 0){
             $pos = ($world % $this->totalSize) + 1;
         }else{
-            $pos = $this->totalSize - abs($world % $this->totalSize);
+            $pos = $this->totalSize - (int) abs($world % $this->totalSize);
         }
         if($pos == $this->totalSize + 1){
             $pos = 1;
@@ -1944,8 +1910,8 @@ const CROSSING = 4; //blue
     }
 
     public function getShapeByPosition(float $worldX, float $worldZ) : int{
-        $X = $this->getPlotPos($worldX);
-        $Z = $this->getPlotPos($worldZ);
+        $X = $this->getPlotPos((int) $worldX);
+        $Z = $this->getPlotPos((int) $worldZ);
 
         if($X <= $this->plotSize and $Z <= $this->plotSize){
             $type = self::PLOT;

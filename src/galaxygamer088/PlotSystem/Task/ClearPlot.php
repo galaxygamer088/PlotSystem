@@ -2,11 +2,14 @@
 
 namespace galaxygamer088\PlotSystem\Task;
 
+use galaxygamer088\PlotSystem\Options_test;
+use galaxygamer088\PlotSystem\InternalBlockFactory;
 use galaxygamer088\PlotSystem\Options;
-use pocketmine\block\BlockFactory;
+//use pocketmine\block\BlockFactory;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\world\World;
+use pocketmine\block\VanillaBlocks;
 
 class ClearPlot extends Task{
 
@@ -26,23 +29,26 @@ public array $plotId;
                     $Z = $this->plotId[1] * Options::TOTAL_SIZE + $z;
 
                     if($y == 0){
-                        $bottomBlock = BlockFactory::getInstance()->get(Options::PLOT_BOTTOM_BLOCK_ID, Options::PLOT_BOTTOM_BLOCK_META);
-                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getFullId() !== $bottomBlock->getFullId()){
+                        //$bottomBlock = BlockFactory::getInstance()->get(Options::PLOT_BOTTOM_BLOCK_ID, Options::PLOT_BOTTOM_BLOCK_META);
+                        $bottomBlock = InternalBlockFactory::get(Options_test::PLOT_BOTTOM_BLOCK);
+                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $bottomBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $bottomBlock);
                         }
                     }elseif($y == Options::GROUND_HEIGHT){
-                        $floorBlock = BlockFactory::getInstance()->get(Options::PLOT_FLOOR_BLOCK_ID, Options::PLOT_FLOOR_BLOCK_META);
-                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getFullId() !== $floorBlock->getFullId()){
+                        //$floorBlock = BlockFactory::getInstance()->get(Options::PLOT_FLOOR_BLOCK_ID, Options::PLOT_FLOOR_BLOCK_META);
+                        $floorBlock = InternalBlockFactory::get(Options_test::PLOT_FLOOR_BLOCK);
+                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $floorBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $floorBlock);
                         }
                     }elseif($y < Options::GROUND_HEIGHT){
-                        $fillBlock = BlockFactory::getInstance()->get(Options::PLOT_FILL_BLOCK_ID, Options::PLOT_FILL_BLOCK_META);
-                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getFullId() !== $fillBlock->getFullId()){
+                       // $fillBlock = BlockFactory::getInstance()->get(Options_test::PLOT_FILL_BLOCK_ID, Options::PLOT_FILL_BLOCK_META);
+                        $fillBlock = InternalBlockFactory::get(Options_test::PLOT_FILL_BLOCK);
+                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $fillBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $fillBlock);
                         }
                     }else{
-                        $airBlock = BlockFactory::getInstance()->get(0, 0);
-                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getFullId() !== $airBlock->getFullId()){
+                        $airBlock = VanillaBlocks::AIR();
+                        if($this->world->getBlock(new Vector3($X, $y, $Z))->getStateId() !== $airBlock->getStateId()){
                             $this->world->setBlockAt($X, $y, $Z, $airBlock);
                         }
                     }
