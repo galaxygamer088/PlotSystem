@@ -1,12 +1,12 @@
 ---
-Logo: "§l§7[§eP§fS§7]§r"
+Logo: "§l§4TZ §8|§r"
 
 Messages:
   1: "§cDu hast keine Berechtigung um dieses Plot betreten!"
   2: "§cDieses Plot gehört niemanden!"
   3:
-    1: "§aDu wurdest erfolgreich zu §bPlot ("
-    2: ")§a teleportiert"
+    1: "§eDu wurdest erfolgreich zu §gPlot ("
+    2: ")§e teleportiert"
   4: "§cUngültige PlotId!"
   5:
     1: "§c"
@@ -19,40 +19,56 @@ Messages:
     2: " besitzt kein "
     3: "`tes Plot"
   8: "§cDu besitzt kein Plot!"
-  9: "§aDu wurdest erfolgreich zum Home teleportiert"
-  10: "§aPlot wurde erfolgreich geclaimt!"
+  9: "§eDu wurdest erfolgreich zum Home teleportiert"
+  10: "§ePlot wurde erfolgreich geclaimt!"
   11: "§cDu kannst keine weiteren Plot in besitz nehmen!"
   12: "§cDu musst auf einem Plot stehen um den Command nutzen zu können!"
-  13: "§aStraße wurde erfolgreich gemergt"
+  13: "§eStraße wurde erfolgreich gemergt"
   14: "§cDu musst auf einer Straße stehen um den Command nutzen zu können!"
   15: "§cDu besitzt keine Berechtigung um das zu machen!"
   16: "§cDieses Plot gehört schon jemanden!"
-  17: "§aNeuer Plot Spawn wurde gesetzt bei: §b"
+  17: "§eNeuer Plot Spawn wurde gesetzt bei: §g"
   18:
-    1: "§aPlot wurde an §b"
-    2: "§a vergeben"
+    1: "§ePlot wurde an §g"
+    2: "§e vergeben"
   19: "§cDu musst auf einer PlotWelt sein um diesen Command benutzen zu können!"
   20: "§cDu wurdest vom Plot geworfen!"
-  21: "§aEs wurden alle Spieler vom Plot geworfen!"
-  22: "§aDas Plot wurde erfolgreich gelöscht"
+  21: "§eEs wurden alle Spieler vom Plot geworfen!"
+  22: "§eDas Plot wurde erfolgreich gelöscht"
   23: "§cDas Plot kann nicht gelöscht werden solange es noch gemergt ist!"
-  24: "§aDas Plot wurde erfolgreich resetet"
-  25: "§aDas Merge wurde erfolgreich resetet"
-  26: "§aStraße wurde erfolgreich geunmergt"
+  24: "§eDas Plot wurde erfolgreich resetet"
+  25: "§eDas Merge wurde erfolgreich resetet"
+  26: "§eStraße wurde erfolgreich geunmergt"
   27:
-    1: "§aEs wurde ein freies Plot bei: §bX: "
+    1: "§eEs wurde ein freies Plot bei: §gX: "
     2: " Z: "
-    3: "§a gefunden"
+    3: "§e gefunden"
   28:
-    1: "§aDie Welt §b"
-    2: "§a wurde erfolgreich erstellt"
+    1: "§eDie Welt §g"
+    2: "§e wurde erfolgreich erstellt"
   29: "§cDu musst ein Weltnamen festlegen um eine Plotwelt zu erstellen!"
+
+  PlotMessage:
+    1:
+      1: "§eMerge Plot"
+      2: "§g"
+    2:
+      1: "§eMerge Plot"
+      2: "§g/p info"
+    3:
+      1: "§ePlot ("
+      2: ")"
+      3: "§g"
+    4:
+      1: "§ePlot ("
+      2: ")"
+      3: "§g/p claim"
 
   PlotInfoMenu:
     1:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Infos"
-    2: "§aMerge Plot Infos"
+    2: "§eMerge Plot Infos"
     3: "Hier siehst du alle Infos zum Plot:"
     4: "Alle Plot Id's:"
     5: "Owner:"
@@ -64,38 +80,38 @@ Messages:
 
   ChangePlotRandMenu:
     1:
-      1: "§aDer Plot Rand wurde erfolgreich zu §b"
-      2: "§a geändert worden"
-    2: "§aRand Block ändern"
+      1: "§eDer Plot Rand wurde erfolgreich zu §g"
+      2: "§e geändert worden"
+    2: "§eRand Block ändern"
     3: "Wähle aus welchen Rand Block du für das Plot haben möchtest:"
     4: "§cZurück"
     5: "Block unter Rand ändern"
 
   ChangePlotUnderRandMenu:
     1:
-      1: "§aDer Untere Plot Rand wurde erfolgreich zu §b"
-      2: "§a geändert worden"
-    2: "§aBlock unter Rand ändern"
+      1: "§eDer Untere Plot Rand wurde erfolgreich zu §g"
+      2: "§e geändert worden"
+    2: "§eBlock unter Rand ändern"
     3: "Wähle aus zu welchen Block den du für das Plot haben möchtest der unter den Rand ist:"
     4: "§cZurück"
 
   ChangePlotWallMenu:
     1:
-      1: "§aDie Plot Wand wurde erfolgreich zu §b"
-      2: "§a geändert worden"
-    2: "§aWand Block ändern"
+      1: "§eDie Plot Wand wurde erfolgreich zu §g"
+      2: "§e geändert worden"
+    2: "§eWand Block ändern"
     3: "Wähle aus zu welchen Wand Block du für das Plot haben möchtest:"
     4: "§cZurück"
 
   PlayerPlotListMenu:
-    1: "§aPlot Liste"
-    2: "§aPlot Liste von "
+    1: "§ePlot Liste"
+    2: "§ePlot Liste von "
     3: "Wähle aus zu welches Plot du dich teleportieren möchtest:"
     4: "§cZurück"
 
   PlotMenu:
     1:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Menü"
     2: "Wähle aus was du machen möchtest:"
     3: "Infos"
@@ -108,7 +124,7 @@ Messages:
 
   HelperMenu:
     1:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Helfer Liste"
     2: "Wähle aus was du machen möchtest:"
     3: "§cZurück"
@@ -120,23 +136,24 @@ Messages:
   TrustedMenu:
     1: "§cDu bist nicht mehr auf diesen Plot getrusted!"
     2:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Trusted Liste"
-    3: "§cZurück"
-    4: "Alle Spieler sind Trusted"
-    5: "§aTrue"
-    6: "§cFalse"
-    7: "Spieler Trusten"
-    8: "Spieler Blockieren"
-    9: "§aTrusted"
-    10: "§cBlockiert"
+    3: "Wähle aus was du machen möchtest:"
+    4: "§cZurück"
+    5: "Alle Spieler sind Trusted"
+    6: "§aTrue"
+    7: "§cFalse"
+    8: "Spieler Trusten"
+    9: "Spieler Blockieren"
+    10: "§aTrusted"
+    11: "§cBlockiert"
 
   RemovePlayerMenu:
     1:
-      1: "§aEs wurde §b"
-      2: "§a aus der Liste entfernt!"
+      1: "§eEs wurde §g"
+      2: "§e aus der Liste entfernt!"
     2:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Spieler Verwalten"
     3:
       1: "Wähle aus was du mit "
@@ -147,7 +164,7 @@ Messages:
 
   EditHelperPermissionsMenu:
     1:
-      1: "§aPlot ("
+      1: "§ePlot ("
       2: ") Spieler Rechte Verwalten"
     2:
       1: "Wähle aus was "
@@ -164,25 +181,25 @@ Messages:
 
   PlayerListMenu:
     1:
-      1: "§aDu wurdest erfolgreich zum §b"
-      2: "`ten§a Plot von §b"
-      3: "§a teleportiert"
+      1: "§eDu wurdest erfolgreich zum §g"
+      2: "`ten§e Plot von §g"
+      3: "§e teleportiert"
     2:
-      1: "§aEs wurde §b"
-      2: "§a als Helfer hinzugefügt"
+      1: "§eEs wurde §g"
+      2: "§e ls Helfer hinzugefügt"
     3:
       1: "§c"
       2: " ist schon ein helfer!"
     4:
-      1: "§aEs wurde §b"
-      2: "§a auf diesem Plot getrusted"
+      1: "§eEs wurde §g"
+      2: "§e auf diesem Plot getrusted"
     5:
       1: "§c"
       2: " ist schon getrusted!"
     6: "§cDu wurdest auf diesem Plot blockiert!"
     7:
-      1: "§aEs wurde §b"
-      2: "§a auf diesem Plot blockiert"
+      1: "§eEs wurde §g"
+      2: "§e auf diesem Plot blockiert"
     8:
       1: "§c"
       2: " wurde schon blockiert!"
