@@ -3,11 +3,8 @@
 namespace galaxygamer088\PlotSystem\Generator;
 
 use galaxygamer088\PlotSystem\Options;
-use galaxygamer088\PlotSystem\Generator\InternalBlockFactory;
-use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\Generator;
-use pocketmine\block\VanillaBlocks;
 
 class GeneratePlotWorld extends Generator{
 
@@ -23,41 +20,36 @@ const CROSSING = 4;
         parent::__construct($seed, $preset);
     }
 
-    public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ): void{
+    public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
         $chunk = $world->getChunk($chunkX, $chunkZ);
+
         for($z = 0; $z < 16; ++$z) {
             for($x = 0; $x < 16; ++$x) {
-                $chunk->setBiomeId($x, Options::Y_LEVEL_IN_GENERATOR_SETBIOME, $z, BiomeIds::PLAINS);
-               // $chunk->setBlockStateId($x, 0, $z, BlockFactory::getInstance()->get(Options::PLOT_BOTTOM_BLOCK_ID, Options::PLOT_BOTTOM_BLOCK_META)->getStateId());
-                $chunk->setBlockStateId($x, 0, $z, VanillaBlocks::BEDROCK()->getStateId());
+                //$chunk->setBiomeId($x, 0, $z, BiomeIds::PLAINS);
+                $chunk->setBlockStateId($x, 0, $z, Options::getBlocks()["BOTTOM_BLOCK"]->getStateId());
 
-                //$roadBlock = BlockFactory::getInstance()->get(Options::ROAD_ROAD_BLOCK_ID, Options::ROAD_ROAD_BLOCK_META)->getStateId();
-                $roadBlock = VanillaBlocks::SPRUCE_PLANKS()->getStateId();
+                $roadBlock = Options::getBlocks()["ROAD_BLOCK"]->getStateId();
 
                 $type = $this->getShapeByPosition(($chunkX << 4) + $x, ($chunkZ << 4) + $z);
                 if($type === self::PLOT){
-                    //$chunk->setBlockStateId ($x, $this->groundHeight, $z, BlockFactory::getInstance()->get(Options::PLOT_FLOOR_BLOCK_ID, Options::PLOT_FLOOR_BLOCK_META)->getStateId());
-                    $chunk->setBlockStateId ($x, $this->groundHeight, $z, VanillaBlocks::GRASS()->getStateId());
+                    $chunk->setBlockStateId($x, $this->groundHeight, $z, Options::getBlocks()["PLOT_BLOCK"]->getStateId());
                 }elseif($type === self::ROAD_1){
-                    $chunk->setBlockStateId ($x, $this->groundHeight, $z, $roadBlock);
+                    $chunk->setBlockStateId($x, $this->groundHeight, $z, $roadBlock);
                 }elseif($type === self::ROAD_2){
                     $chunk->setBlockStateId($x, $this->groundHeight, $z, $roadBlock);
                 }elseif($type === self::CROSSING){
                     $chunk->setBlockStateId($x, $this->groundHeight, $z, $roadBlock);
                 }elseif($type == self::WALL){
-                    //$chunk->setBlockStateId($x, $this->groundHeight + 1, $z, BlockFactory::getInstance()->get(Options::ROAD_RAND_BLOCK_ID, Options::ROAD_RAND_BLOCK_META)->getStateId());
-                    $chunk->setBlockStateId($x, $this->groundHeight + 1, $z, VanillaBlocks::STONE_BRICK_SLAB()->getStateId());
-                    //$chunk->setBlockStateId($x, $this->groundHeight, $z, BlockFactory::getInstance()->get(Options::ROAD_UNDER_RAND_BLOCK_ID, Options::ROAD_UNDER_RAND_BLOCK_META)->getStateId());
-                    $chunk->setBlockStateId($x, $this->groundHeight, $z, VanillaBlocks::STONE_BRICKS()->getStateId());
+                    $chunk->setBlockStateId($x, $this->groundHeight + 1, $z, Options::getBlocks()["RAND_BLOCK"]->getStateId());
+                    $chunk->setBlockStateId($x, $this->groundHeight, $z, Options::getBlocks()["UNDER_RAND_BLOCK"]->getStateId());
                 }
 
                 for($y = 1; $y <= $this->groundHeight; ++$y) {
                     if($y !== $this->groundHeight){
                         if($type == self::WALL){
-                            //$chunk->setBlockStateId($x, $y, $z, BlockFactory::getInstance()->get(Options::ROAD_WALL_BLOCK_ID, Options::ROAD_WALL_BLOCK_META)->getStateId());
-                            $chunk->setBlockStateId($x, $y, $z, VanillaBlocks::STONE_BRICKS()->getStateId());
+                            $chunk->setBlockStateId($x, $y, $z, Options::getBlocks()["WALL_BLOCK"]->getStateId());
                         }else{
-                            $chunk->setBlockStateId($x, $y, $z, VanillaBlocks::DIRT()->getStateId());
+                            $chunk->setBlockStateId($x, $y, $z, Options::getBlocks()["FILL_BLOCK"]->getStateId());
                         }
                     }
                 }
@@ -98,6 +90,5 @@ const CROSSING = 4;
         return $type;
     }
 
-    public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void {
-    }
+    public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void {}
 }
