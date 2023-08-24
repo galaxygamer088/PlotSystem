@@ -3,7 +3,7 @@
 namespace galaxygamer088\PlotSystem\Task;
 
 use galaxygamer088\PlotSystem\Options;
-use galaxygamer088\PlotSystem\InternalBlockFactory;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\world\Position;
@@ -35,7 +35,7 @@ const CROSSING = 4;
 
                 $world = $this->position->getWorld();
                 $type = $this->getRoadShapeByPosition($X, $Z);
-                $roadBlock = InternalBlockFactory::get(Options::ROAD_ROAD_BLOCK);
+                $roadBlock = Options::getBlocks()["ROAD_BLOCK"];
 
                 if($this->plotId[2] == self::ROAD_1 and $type == self::ROAD_1){
                     $this->setBasicBlock($X, $Z);
@@ -54,16 +54,16 @@ const CROSSING = 4;
                     }
                 }elseif($type == self::WALL){
                     if($this->remove){
-                        $world->setBlockAt($X, Options::GROUND_HEIGHT + 1, $Z, InternalBlockFactory::getBlock(0, 0));
-                        $world->setBlockAt($X, Options::GROUND_HEIGHT, $Z, InternalBlockFactory::get(Options::PLOT_FLOOR_BLOCK));
+                        $world->setBlockAt($X, Options::GROUND_HEIGHT + 1, $Z, VanillaBlocks::AIR());
+                        $world->setBlockAt($X, Options::GROUND_HEIGHT, $Z, Options::getBlocks()["PLOT_BLOCK"]);
                         for($y = 1; $y < Options::GROUND_HEIGHT; $y++){
-                            $world->setBlockAt($X, $y, $Z, InternalBlockFactory::get(Options::PLOT_FILL_BLOCK));
+                            $world->setBlockAt($X, $y, $Z, Options::getBlocks()["FILL_BLOCK"]);
                         }
                     }else{
-                        $world->setBlockAt($X, Options::GROUND_HEIGHT + 1, $Z, InternalBlockFactory::get(Options::ROAD_CLAIM_RAND_BLOCK));
-                        $world->setBlockAt($X, Options::GROUND_HEIGHT, $Z, InternalBlockFactory::get(Options::ROAD_CLAIM_UNDER_RAND_BLOCK));
+                        $world->setBlockAt($X, Options::GROUND_HEIGHT + 1, $Z, Options::getBlocks()["CLAIM_RAND_BLOCK"]);
+                        $world->setBlockAt($X, Options::GROUND_HEIGHT, $Z, Options::getBlocks()["CLAIM_UNDER_RAND_BLOCK"]);
                         for($y = 1; $y < Options::GROUND_HEIGHT; $y++){
-                            $world->setBlockAt($X, $y, $Z, InternalBlockFactory::get(Options::ROAD_WALL_BLOCK));
+                            $world->setBlockAt($X, $y, $Z, Options::getBlocks()["WALL_BLOCK"]);
                         }
                     }
                 }
@@ -75,23 +75,23 @@ const CROSSING = 4;
         $world = $this->position->getWorld();
         for($y = 0; $y <= 255; $y++){
             if($y == 0){
-                $bottomBlock = InternalBlockFactory::get(Options::PLOT_BOTTOM_BLOCK);
-                if($world->getBlock(new Vector3($x, $y, $z))->getStateId() !== $bottomBlock->getStateId()){
+                $bottomBlock = Options::getBlocks()["BOTTOM_BLOCK"];;
+                if($world->getBlock(new Vector3($x, $y, $z))->getTypeId() !== $bottomBlock->getTypeId()){
                     $world->setBlockAt($x, $y, $z, $bottomBlock);
                 }
             }elseif($y == Options::GROUND_HEIGHT){
-                $floorBlock = InternalBlockFactory::get(Options::PLOT_FLOOR_BLOCK);
-                if($world->getBlock(new Vector3($x, $y, $z))->getStateId() !== $floorBlock->getStateId()){
+                $floorBlock = Options::getBlocks()["PLOT_BLOCK"];;
+                if($world->getBlock(new Vector3($x, $y, $z))->getTypeId() !== $floorBlock->getTypeId()){
                     $world->setBlockAt($x, $y, $z, $floorBlock);
                 }
             }elseif($y < Options::GROUND_HEIGHT){
-                $fillBlock = InternalBlockFactory::get(Options::PLOT_FILL_BLOCK);
-                if($world->getBlock(new Vector3($x, $y, $z))->getStateId() !== $fillBlock->getStateId()){
+                $fillBlock = Options::getBlocks()["FILL_BLOCK"];;
+                if($world->getBlock(new Vector3($x, $y, $z))->getTypeId() !== $fillBlock->getTypeId()){
                     $world->setBlockAt($x, $y, $z, $fillBlock);
                 }
             }else{
-                $airBlock = InternalBlockFactory::getBlock(0, 0);
-                if($world->getBlock(new Vector3($x, $y, $z))->getStateId() !== $airBlock->getStateId()){
+                $airBlock = VanillaBlocks::AIR();
+                if($world->getBlock(new Vector3($x, $y, $z))->getTypeId() !== $airBlock->getTypeId()){
                     $world->setBlockAt($x, $y, $z, $airBlock);
                 }
             }

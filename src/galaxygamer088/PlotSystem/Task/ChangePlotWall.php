@@ -2,7 +2,6 @@
 
 namespace galaxygamer088\PlotSystem\Task;
 
-use galaxygamer088\PlotSystem\InternalBlockFactory;
 use galaxygamer088\PlotSystem\Options;
 use pocketmine\block\Block;
 use pocketmine\scheduler\Task;
@@ -64,7 +63,7 @@ const WEST = 3;
         if($this->side[$side] == true){
             return $this->block;
         }else{
-            return InternalBlockFactoryget(Options::ROAD_WALL_BLOCK);
+            return Options::getBlocks()["WALL_BLOCK"];
         }
     }
 }

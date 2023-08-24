@@ -2,9 +2,9 @@
 
 namespace galaxygamer088\PlotSystem\Task;
 
-use galaxygamer088\PlotSystem\InternalBlockFactory;
 use galaxygamer088\PlotSystem\Options;
 use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\scheduler\Task;
 use pocketmine\world\Position;
 
@@ -75,7 +75,7 @@ const WEST = 3;
         if($this->side[$side]){
             return $this->block1;
         }else{
-            return InternalBlockFactory::getBlock(0, 0);
+            return VanillaBlocks::AIR();
         }
     }
 
@@ -83,7 +83,7 @@ const WEST = 3;
         if($this->side[$side]){
             return $this->block2;
         }else{
-            return InternalBlockFactory::get(Options::PLOT_FLOOR_BLOCK);
+            return Options::getBlocks()["PLOT_BLOCK"];;
         }
     }
 }
